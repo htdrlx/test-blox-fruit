@@ -1,0 +1,148 @@
+-- Script Do Toa Do X Y Z
+-- Hien thi toa do hien tai cua nhan vat theo thoi gian thuc
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+
+-- Tao GUI
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "CoordGui"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.Parent = game.CoreGui
+
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0, 220, 0, 130)
+Frame.Position = UDim2.new(0, 10, 0.5, -65)
+Frame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+Frame.BorderSizePixel = 0
+Frame.Active = true
+Frame.Draggable = true
+Frame.Parent = ScreenGui
+
+local Corner = Instance.new("UICorner")
+Corner.CornerRadius = UDim.new(0, 8)
+Corner.Parent = Frame
+
+-- Vien ngoai dep
+local Stroke = Instance.new("UIStroke")
+Stroke.Color = Color3.fromRGB(255, 120, 0)
+Stroke.Thickness = 1.5
+Stroke.Parent = Frame
+
+-- Title bar
+local TitleBar = Instance.new("Frame")
+TitleBar.Size = UDim2.new(1, 0, 0, 28)
+TitleBar.BackgroundColor3 = Color3.fromRGB(255, 120, 0)
+TitleBar.BorderSizePixel = 0
+TitleBar.Parent = Frame
+
+local TitleCorner = Instance.new("UICorner")
+TitleCorner.CornerRadius = UDim.new(0, 8)
+TitleCorner.Parent = TitleBar
+
+-- Fix goc duoi cua title bar
+local TitleFix = Instance.new("Frame")
+TitleFix.Size = UDim2.new(1, 0, 0.5, 0)
+TitleFix.Position = UDim2.new(0, 0, 0.5, 0)
+TitleFix.BackgroundColor3 = Color3.fromRGB(255, 120, 0)
+TitleFix.BorderSizePixel = 0
+TitleFix.Parent = TitleBar
+
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Size = UDim2.new(1, -10, 1, 0)
+TitleLabel.Position = UDim2.new(0, 10, 0, 0)
+TitleLabel.BackgroundTransparency = 1
+TitleLabel.Text = "📍 TOA DO NHAN VAT"
+TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleLabel.Font = Enum.Font.GothamBold
+TitleLabel.TextSize = 12
+TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+TitleLabel.Parent = TitleBar
+
+-- Tao label hien thi X Y Z
+local function MakeLabel(labelText, yPos)
+    local Container = Instance.new("Frame")
+    Container.Size = UDim2.new(1, -20, 0, 22)
+    Container.Position = UDim2.new(0, 10, 0, yPos)
+    Container.BackgroundTransparency = 1
+    Container.Parent = Frame
+
+    local Tag = Instance.new("TextLabel")
+    Tag.Size = UDim2.new(0, 20, 1, 0)
+    Tag.BackgroundTransparency = 1
+    Tag.Text = labelText
+    Tag.TextColor3 = Color3.fromRGB(255, 120, 0)
+    Tag.Font = Enum.Font.GothamBold
+    Tag.TextSize = 13
+    Tag.TextXAlignment = Enum.TextXAlignment.Left
+    Tag.Parent = Container
+
+    local Value = Instance.new("TextLabel")
+    Value.Size = UDim2.new(1, -25, 1, 0)
+    Value.Position = UDim2.new(0, 25, 0, 0)
+    Value.BackgroundTransparency = 1
+    Value.Text = "0"
+    Value.TextColor3 = Color3.fromRGB(220, 220, 220)
+    Value.Font = Enum.Font.Gotham
+    Value.TextSize = 13
+    Value.TextXAlignment = Enum.TextXAlignment.Left
+    Value.Parent = Container
+
+    return Value
+end
+
+local LabelX = MakeLabel("X:", 35)
+local LabelY = MakeLabel("Y:", 60)
+local LabelZ = MakeLabel("Z:", 85)
+
+-- Nut Copy
+local CopyBtn = Instance.new("TextButton")
+CopyBtn.Size = UDim2.new(1, -20, 0, 22)
+CopyBtn.Position = UDim2.new(0, 10, 0, 102)
+CopyBtn.BackgroundColor3 = Color3.fromRGB(50, 140, 80)
+CopyBtn.Text = "COPY TOA DO"
+CopyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+CopyBtn.Font = Enum.Font.GothamBold
+CopyBtn.TextSize = 11
+CopyBtn.BorderSizePixel = 0
+CopyBtn.Parent = Frame
+
+local BtnCorner = Instance.new("UICorner")
+BtnCorner.CornerRadius = UDim.new(0, 5)
+BtnCorner.Parent = CopyBtn
+
+-- Copy toa do vao clipboard
+CopyBtn.MouseButton1Click:Connect(function()
+    local char = LocalPlayer.Character
+    local hrp = char and char:FindFirstChild("HumanoidRootPart")
+    if hrp then
+        local p = hrp.Position
+        local str = string.format("%.2f, %.2f, %.2f", p.X, p.Y, p.Z)
+        setclipboard(str)
+        CopyBtn.Text = "DA COPY!"
+        CopyBtn.BackgroundColor3 = Color3.fromRGB(255, 120, 0)
+        task.wait(1.5)
+        CopyBtn.Text = "COPY TOA DO"
+        CopyBtn.BackgroundColor3 = Color3.fromRGB(50, 140, 80)
+    end
+end)
+
+-- Cap nhat toa do theo thoi gian thuc
+RunService.RenderStepped:Connect(function()
+    local char = LocalPlayer.Character
+    local hrp = char and char:FindFirstChild("HumanoidRootPart")
+    if hrp then
+        local p = hrp.Position
+        LabelX.Text = string.format("%.2f", p.X)
+        LabelY.Text = string.format("%.2f", p.Y)
+        LabelZ.Text = string.format("%.2f", p.Z)
+    else
+        LabelX.Text = "---"
+        LabelY.Text = "---"
+        LabelZ.Text = "---"
+    end
+end)
+
+print("[GetCoords] Script toa do da chay!")
